@@ -9,20 +9,33 @@
 </head>
 <body>
   
-  <!-- LOGIN SCREEN -->
+  <!-- AUTH SCREEN -->
   <div id="auth-screen" class="auth-container">
     <div class="auth-box">
       <h2>ENCLAVE TERMINAL</h2>
-      <p>Secure login required.</p>
-      <form id="auth-form">
-        <input type="email" id="email-input" placeholder="Email" required>
-        <input type="password" id="password-input" placeholder="Password" required>
-        <input type="text" id="username-input" placeholder="Username (New Accounts)" style="display: none;">
-        <input type="url" id="avatar-input" placeholder="Avatar Image URL" style="display: none;">
-        <p id="auth-error" class="error-msg"></p>
-        <button type="submit" id="login-btn">Initialize Connection</button>
-        <button type="button" id="toggle-auth-btn" class="secondary-btn">New Agent? Register Here</button>
+      
+      <!-- LOG IN FORM -->
+      <form id="login-form">
+        <p>Log in to your account.</p>
+        <input type="text" id="login-username" placeholder="Username" required autocomplete="off">
+        <input type="password" id="login-password" placeholder="Password" required>
+        <p id="login-error" class="error-msg"></p>
+        <button type="submit">Log In</button>
+        <button type="button" id="go-to-signup" class="secondary-btn">Don't have an account? Sign Up</button>
       </form>
+
+      <!-- SIGN UP FORM (Hidden by default) -->
+      <form id="signup-form" style="display: none;">
+        <p>Register a new Agent profile.</p>
+        <input type="text" id="signup-username" placeholder="Username" required autocomplete="off">
+        <input type="password" id="signup-password" placeholder="Password" required>
+        <input type="email" id="signup-email" placeholder="Email" required>
+        <input type="url" id="signup-avatar" placeholder="Profile Picture (Image Link)" required>
+        <p id="signup-error" class="error-msg"></p>
+        <button type="submit">Create Account</button>
+        <button type="button" id="go-to-login" class="secondary-btn">Already have an account? Log In</button>
+      </form>
+
     </div>
   </div>
 
