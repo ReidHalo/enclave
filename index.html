@@ -3,40 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enclave | Chat</title>
+  <title>Enclave | Secure Comms</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Import Supabase from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   
-  <!-- LOGIN / REGISTER SCREEN -->
+  <!-- LOGIN SCREEN -->
   <div id="auth-screen" class="auth-container">
     <div class="auth-box">
-      <h2>Welcome to Enclave</h2>
-      <p>Log in or create an account to start chatting.</p>
-      
+      <h2>ENCLAVE TERMINAL</h2>
+      <p>Secure login required.</p>
       <form id="auth-form">
         <input type="email" id="email-input" placeholder="Email" required>
         <input type="password" id="password-input" placeholder="Password" required>
-        
-        <!-- Only needed for registration -->
-        <input type="text" id="username-input" placeholder="Username (for new accounts)" style="display: none;">
-        <input type="url" id="avatar-input" placeholder="Profile Pic URL (for new accounts)" style="display: none;">
-        
+        <input type="text" id="username-input" placeholder="Username (New Accounts)" style="display: none;">
+        <input type="url" id="avatar-input" placeholder="Avatar Image URL" style="display: none;">
         <p id="auth-error" class="error-msg"></p>
-        
-        <button type="submit" id="login-btn">Log In</button>
-        <button type="button" id="toggle-auth-btn" class="secondary-btn">Need an account? Sign Up</button>
+        <button type="submit" id="login-btn">Initialize Connection</button>
+        <button type="button" id="toggle-auth-btn" class="secondary-btn">New Agent? Register Here</button>
       </form>
     </div>
   </div>
 
-  <!-- MAIN APP (Hidden until logged in) -->
+  <!-- MAIN APP (Hidden until verified) -->
   <div id="app-container" class="app-container" style="display: none;">
-    <!-- We will put the 3-column chat layout here in the next step -->
-    <h1>Logged in successfully! Loading chat...</h1>
-    <button id="logout-btn">Log Out</button>
+    <!-- Servers Column -->
+    <nav class="hubs-sidebar">
+      <div class="hub-icon active">E</div>
+    </nav>
+
+    <!-- Channels Column -->
+    <aside class="channels-sidebar">
+      <div class="server-header">
+        <h2 id="server-name">Global Hub</h2>
+      </div>
+      <div class="channel-list">
+        <p class="category">SECURE CHANNELS</p>
+        <div class="channel active"><span class="hash">#</span> general-comms</div>
+      </div>
+      
+      <!-- User Profile Panel -->
+      <div class="user-panel">
+        <img id="my-avatar" src="" alt="Avatar" class="avatar">
+        <div class="user-info">
+          <span id="my-username">Loading...</span>
+          <span class="status" id="logout-btn" style="cursor: pointer; color: #f59e0b;">Disconnect</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Chat Column -->
+    <main class="chat-area">
+      <header class="chat-header">
+        <h3><span class="hash">#</span> general-comms</h3>
+        <span class="header-status">Encrypted Connection Active</span>
+      </header>
+      
+      <div class="messages-container" id="messages-container">
+        <!-- Messages inject here -->
+      </div>
+
+      <div class="input-area">
+        <form id="chat-form">
+          <input type="text" id="msg-input" placeholder="Transmit secure message..." autocomplete="off" required>
+          <button type="submit">SEND</button>
+        </form>
+      </div>
+    </main>
   </div>
 
   <script src="app.js"></script>
