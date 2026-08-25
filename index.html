@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enclave | Secure Comms</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Column 1: Servers / Hubs -->
+    <nav class="hubs-sidebar">
+      <div class="hub-icon active">E</div>
+      <div class="hub-icon">+</div>
+    </nav>
+
+    <!-- Column 2: Channels -->
+    <aside class="channels-sidebar">
+      <div class="server-header">
+        <h2>ENCLAVE_ALPHA</h2>
+      </div>
+      <div class="channel-list">
+        <p class="category">SECURE CHANNELS</p>
+        <div class="channel active"><span class="hash">#</span> general-comms</div>
+        <div class="channel"><span class="hash">#</span> intel-drop</div>
+        <div class="channel"><span class="hash">#</span> system-logs</div>
+      </div>
+      <div class="user-panel">
+        <div class="avatar" id="my-avatar">?</div>
+        <div class="user-info">
+          <span id="my-username">Agent</span>
+          <span class="status">Secured</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Column 3: Main Chat -->
+    <main class="chat-area">
+      <header class="chat-header">
+        <h3><span class="hash">#</span> general-comms</h3>
+        <span class="header-status">End-to-End Encrypted (Simulated)</span>
+      </header>
+      
+      <div class="messages-container" id="messages">
+        <!-- Messages inject here via JS -->
+      </div>
+
+      <div class="input-area">
+        <form id="chat-form">
+          <input type="text" id="msg-input" placeholder="Transmit message to #general-comms..." autocomplete="off" required>
+          <button type="submit">SEND</button>
+        </form>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
