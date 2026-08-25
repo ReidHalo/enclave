@@ -1,72 +1,101 @@
-// 1. Initialize Supabase
+// 1. Initialize Supabase (PUT YOUR KEYS HERE)
 const supabase = window.supabase.createClient('https://aflbmhfwywugdcmwmdpa.supabase.co/rest/v1/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmbGJtaGZ3eXd1Z2RjbXdtZHBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2MTQyMTgsImV4cCI6MjEwMzE5MDIxOH0.iS5jxIB5yeaCHsqLBVzfxBFo5zPI6yCAsYjuL8SvTmM');
 
 // 2. Auth DOM Elements
 const authScreen = document.getElementById('auth-screen');
 const appContainer = document.getElementById('app-container');
-const authForm = document.getElementById('auth-form');
-const emailInput = document.getElementById('email-input');
-const passwordInput = document.getElementById('password-input');
-const usernameInput = document.getElementById('username-input');
-const avatarInput = document.getElementById('avatar-input');
-const authError = document.getElementById('auth-error');
-const toggleAuthBtn = document.getElementById('toggle-auth-btn');
-const loginBtn = document.getElementById('login-btn');
+
+const loginForm = document.getElementById('login-form');
+const signupForm = document.getElementById('signup-form');
+
+const goToSignupBtn = document.getElementById('go-to-signup');
+const goToLoginBtn = document.getElementById('go-to-login');
 const logoutBtn = document.getElementById('logout-btn');
 
-let isLoginMode = true;
-
-// Toggle Login / Register UI
-toggleAuthBtn.addEventListener('click', () => {
-  isLoginMode = !isLoginMode;
-  if (isLoginMode) {
-    loginBtn.textContent = 'Initialize Connection';
-    toggleAuthBtn.textContent = 'New Agent? Register Here';
-    usernameInput.style.display = 'none';
-    avatarInput.style.display = 'none';
-    usernameInput.required = false;
-  } else {
-    loginBtn.textContent = 'Register Profile';
-    toggleAuthBtn.textContent = 'Return to Login';
-    usernameInput.style.display = 'block';
-    avatarInput.style.display = 'block';
-    usernameInput.required = true;
-  }
-  authError.textContent = '';
+// Toggle UI between Login and Sign Up
+goToSignupBtn.addEventListener('click', () => {
+  loginForm.style.display = 'none';
+  signupForm.style.display = 'block';
+  document.getElementById('signup-error').textContent = '';
 });
 
-// Handle Login / Register Submit
-authForm.addEventListener('submit', async (e) => {
+goToLoginBtn.addEventListener('click', () => {
+  signupForm.style.display = 'none';
+  loginForm.style.display = 'block';
+  document.getElementById('login-error').textContent = '';
+});
+
+// --- SIGN UP LOGIC ---
+signupForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  authError.textContent = '';
+  const errorText = document.getElementById('signup-error');
+  errorText.textContent = 'Processing...';
   
-  if (isLoginMode) {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: emailInput.value,
-      password: passwordInput.value
-    });
-    if (error) authError.textContent = error.message;
-    else checkUser();
-  } else {
-    const { data, error } = await supabase.auth.signUp({
-      email: emailInput.value,
-      password: passwordInput.value
-    });
+  const username = document.getElementById('signup-username').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const email = document.getElementById('signup-email').value.trim();
+  const avatar = document.getElementById('signup-avatar').value.trim();
+
+  // 1. Check if username is already taken
+  const { data: existingUser } = await supabase
+    .from('profiles')
+    .select('username')
+    .eq('username', username)
+    .single();
+
+  if (existingUser) {
+    errorText.textContent = 'Username taken';
+    return;
+  }
+
+  // 2. Create the account in Supabase
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  
+  if (error) {
+    errorText.textContent = error.message;
+  } else if (data.user) {
+    // 3. Save their custom profile details
+    await supabase.from('profiles').insert([{
+      id: data.user.id,
+      username: username,
+      avatar_url: avatar
+    }]);
     
-    if (error) {
-      authError.textContent = error.message;
-    } else if (data.user) {
-      // Save profile to database
-      await supabase.from('profiles').insert([{
-        id: data.user.id,
-        username: usernameInput.value,
-        avatar_url: avatarInput.value || 'https://i.imgur.com/34iP6Xn.png'
-      }]);
-      alert("Registration complete. You may now log in.");
-      toggleAuthBtn.click();
-    }
+    alert("Account created! You can now log in.");
+    goToLoginBtn.click(); // Send them back to login page
   }
 });
+
+// --- LOG IN LOGIC ---
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errorText = document.getElementById('login-error');
+  errorText.textContent = 'Connecting...';
+  
+  const usernameInput = document.getElementById('login-username').value.trim();
+  const passwordInput = document.getElementById('login-password').value;
+
+  // 1. Ask the database for the email connected to this username
+  const { data: email, error: rpcError } = await supabase.rpc('get_user_email', { p_username: usernameInput });
+
+  if (!email || rpcError) {
+    errorText.textContent = 'Invalid username or password.';
+    return;
+  }
+
+  // 2. Log in using the hidden email we just found
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: passwordInput
+  });
+
+  if (error) {
+    errorText.textContent = error.message;
+  } else {
+    checkUser(); // Success! Load the chat.
+  }
+});
+
 
 // Check Session & Switch Screens
 async function checkUser() {
@@ -86,6 +115,7 @@ logoutBtn.addEventListener('click', async () => {
   await supabase.auth.signOut();
   checkUser();
 });
+
 
 // --- CHAT LOGIC ---
 let currentChannelId = null;
@@ -173,5 +203,5 @@ chatForm.addEventListener('submit', async (e) => {
   ]);
 });
 
-// Start the app
+// Start the app check
 checkUser();
